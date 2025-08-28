@@ -64,7 +64,7 @@ fn main() {
             true => {
                 if !switcher {
                     switcher = true;
-                    window.set_size([to_coord(menu.get_width()), to_coord(menu.get_height())]);
+                    window.set_size([to_coord(menu.get_width() + 15), to_coord(menu.get_height())]);
                     game = Game::new(
                         menu.get_width(),
                         menu.get_height(),

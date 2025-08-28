@@ -1,4 +1,4 @@
-use piston_window::color::WHITE;
+use piston_window::color::{RED, WHITE};
 use piston_window::*;
 
 use rand::{Rng, rng};
@@ -9,6 +9,12 @@ use crate::snake::{Direction, Snake};
 use crate::wall::Wall;
 
 const RESTART_TIME: f64 = 5.0;
+
+fn make_price(i_level: i32, f_waiting: f64) -> u32 {
+    let u_first: u32 = 10 * (i_level + 1) as u32;
+    let f_second: f64 = f_waiting * 100 as f64;
+    u_first * 2 - f_second as u32
+}
 
 pub struct Game {
     snake: Snake,
@@ -26,6 +32,8 @@ pub struct Game {
     moving_period: f64,
 
     go_on: bool,
+    score: u32,
+    food_price: u32,
 }
 
 impl Game {
@@ -42,6 +50,8 @@ impl Game {
             waiting_time,
             moving_period: waiting_time,
             go_on: true,
+            score: 0,
+            food_price: make_price(level, waiting_time),
         };
         g.wall.make_grille();
         return g;
@@ -85,6 +95,35 @@ impl Game {
         if self.food_exists {
             draw_block(FOOD_COLOR, self.food_x, self.food_y, context, g);
         }
+
+        draw_text(
+            WHITE,
+            self.width + 2,
+            5,
+            "Score",
+            20,
+            glyph_cache,
+            context,
+            g,
+        );
+        let mut score_texte: String = "".to_string();
+        let mut palier = 4;
+        while palier > 0 && 10_u32.pow(palier) > self.score {
+            score_texte.push_str("0");
+            palier -= 1;
+        }
+        score_texte.push_str(&self.score.to_string().to_owned());
+
+        draw_text(
+            RED,
+            self.width + 2,
+            8,
+            &score_texte,
+            20,
+            glyph_cache,
+            context,
+            g,
+        );
 
         if self.game_over {
             let text_x = self.width / 3;
@@ -140,6 +179,7 @@ impl Game {
         if self.food_exists && self.food_x == head_x && self.food_y == head_y {
             self.food_exists = false;
             self.snake.restore_tail();
+            self.score += self.food_price;
         }
     }
 

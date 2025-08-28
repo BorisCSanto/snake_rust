@@ -56,9 +56,9 @@ pub enum Vitesse {
 impl Vitesse {
     pub fn get_vitesse(&self) -> f64 {
         match *self {
-            Vitesse::Rapide => 0.1,
-            Vitesse::Normal => 0.2,
-            Vitesse::Lent => 0.3,
+            Vitesse::Rapide => 0.05,
+            Vitesse::Normal => 0.1,
+            Vitesse::Lent => 0.2,
         }
     }
 
