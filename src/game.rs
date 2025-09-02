@@ -34,6 +34,8 @@ pub struct Game {
     go_on: bool,
     score: u32,
     food_price: u32,
+    food_count: u8,
+    perf_level: u8,
 }
 
 impl Game {
@@ -52,6 +54,8 @@ impl Game {
             go_on: true,
             score: 0,
             food_price: make_price(level, waiting_time),
+            food_count: 0,
+            perf_level: 1,
         };
         g.wall.make_grille();
         return g;
@@ -91,7 +95,7 @@ impl Game {
         draw_rectangle(BORDER_COLOR, 0, 0, 1, self.height, context, g);
         draw_rectangle(BORDER_COLOR, self.width - 1, 0, 1, self.height, context, g);
         self.wall.draw(context, g);
-        self.snake.draw(context, g);
+        self.snake.draw(context, g, self.perf_level);
         if self.food_exists {
             draw_block(FOOD_COLOR, self.food_x, self.food_y, context, g);
         }
@@ -100,6 +104,46 @@ impl Game {
             WHITE,
             self.width + 2,
             5,
+            "Fourmis ",
+            20,
+            glyph_cache,
+            context,
+            g,
+        );
+        draw_text(
+            RED,
+            self.width + 10,
+            5,
+            &self.food_count.to_string(),
+            20,
+            glyph_cache,
+            context,
+            g,
+        );
+        draw_text(
+            WHITE,
+            self.width + 2,
+            8,
+            "Niveau ",
+            20,
+            glyph_cache,
+            context,
+            g,
+        );
+        draw_text(
+            RED,
+            self.width + 10,
+            8,
+            &self.perf_level.to_string(),
+            20,
+            glyph_cache,
+            context,
+            g,
+        );
+        draw_text(
+            WHITE,
+            self.width + 2,
+            11,
             "Score",
             20,
             glyph_cache,
@@ -107,7 +151,7 @@ impl Game {
             g,
         );
         let mut score_texte: String = "".to_string();
-        let mut palier = 4;
+        let mut palier = 5;
         while palier > 0 && 10_u32.pow(palier) > self.score {
             score_texte.push_str("0");
             palier -= 1;
@@ -117,7 +161,7 @@ impl Game {
         draw_text(
             RED,
             self.width + 2,
-            8,
+            14,
             &score_texte,
             20,
             glyph_cache,
@@ -179,7 +223,18 @@ impl Game {
         if self.food_exists && self.food_x == head_x && self.food_y == head_y {
             self.food_exists = false;
             self.snake.restore_tail();
-            self.score += self.food_price;
+            self.check_score();
+        }
+    }
+
+    fn check_score(&mut self) {
+        self.score += self.food_price;
+        self.food_count += 1;
+        if self.food_count == 10 {
+            self.food_count = 0;
+            self.food_price = self.food_price * 2;
+            self.waiting_time = self.waiting_time - 0.01;
+            self.perf_level += 1;
         }
     }
 

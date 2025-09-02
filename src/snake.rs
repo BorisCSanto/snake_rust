@@ -1,7 +1,7 @@
 use piston_window::{Context, G2d};
 use std::collections::LinkedList;
 
-use crate::color::SNAKE_COLOR;
+use crate::color::snake_color;
 use crate::draw::draw_block;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -49,9 +49,9 @@ impl Snake {
         }
     }
 
-    pub fn draw(&self, context: &Context, g: &mut G2d) {
+    pub fn draw(&self, context: &Context, g: &mut G2d, l: u8) {
         for block in &self.body {
-            draw_block(SNAKE_COLOR, block.x, block.y, context, g);
+            draw_block(snake_color(l), block.x, block.y, context, g);
         }
     }
 
